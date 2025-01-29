@@ -4,7 +4,7 @@ import LogoImg from "../utils/Images/logo2.png";
 import { NavLink } from "react-router-dom";
 import Button from "./Button";
 import {
-  FavoriteRounded,
+  FavoriteBorder,
   MenuRounded,
   SearchRounded,
   ShoppingCartOutlined,
@@ -126,7 +126,7 @@ const MobileMenu = styled.div`
   z-index:${({isOpen})=>(isOpen ? '1000' : '-1000')};
 `;
 
-function Navbar() {
+function Navbar({setOpenAuth,openAuth}) {
   const [isOpen,setIsOpen]= useState(false);
   return (
     <Nav>
@@ -153,7 +153,7 @@ function Navbar() {
           <Navlink to="/Orders" onClick={()=> setIsOpen(!isOpen)}>Orders</Navlink>
           <Navlink to="/Contact" onClick={()=> setIsOpen(!isOpen)}>Contact</Navlink>
           <Button text="SignUp" outlined/>
-          <Button text="SignIn"  />
+          <Button text="SignIn"  onClick={()=>setOpenAuth(!openAuth)}/>
         </MobileMenu>
       )}
 
@@ -162,11 +162,12 @@ function Navbar() {
             <SearchRounded sx={{ color: "inherit", fontSize: "24px" }} />
           </Navlink>
           <Navlink to="/favourite">
-            <FavoriteRounded sx={{ color: "inherit", fontSize: "24px" }} />
+            <FavoriteBorder sx={{ color: "inherit", fontSize: "24px" }} />
           </Navlink>
           <Navlink to="/cart">
             <ShoppingCartOutlined sx={{ color: "inherit", fontSize: "24px" }} />
           </Navlink>
+          <Button text="SignIn" onClick={()=>setOpenAuth(!openAuth)}/>
         </MobileIcons>
 
         <ButtonContainer>
@@ -174,12 +175,12 @@ function Navbar() {
             <SearchRounded sx={{ color: "inherit", fontSize: "24px" }} />
           </Navlink>
           <Navlink to="/favourite">
-            <FavoriteRounded sx={{ color: "inherit", fontSize: "24px" }} />
+            <FavoriteBorder sx={{ color: "inherit", fontSize: "24px" }} />
           </Navlink>
           <Navlink to="/cart">
             <ShoppingCartOutlined sx={{ color: "inherit", fontSize: "24px" }} />
           </Navlink>
-          <Button text="SignIn" />
+          <Button text="SignIn" onClick={()=>setOpenAuth(!openAuth)}/>
         </ButtonContainer>
       </NavbarContainer>
     </Nav>
