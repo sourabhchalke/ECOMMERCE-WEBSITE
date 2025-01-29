@@ -1,24 +1,49 @@
-import logo from './logo.svg';
+
 import './App.css';
 
+import styled, { ThemeProvider } from 'styled-components';
+import { lightTheme } from './utils/Themes';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import Navbar from './components/Navbar';
+
+import Home from './pages/Home';
+import Shop from './pages/ShopListing';
+import Authentication from './pages/Authentication';
+
+import { useState } from 'react';
+
+const Container = styled.div`
+  width:100%;
+  height:100vh;
+  display:flex;
+  flex-direction:colum;
+  background:${({ theme }) => theme.bg};
+  color:${({ theme }) => theme.text_primary};
+  overflow-x=hidden;
+  overfloy-y:hidden;
+  transition : all 0.2s ease;
+`;
+
 function App() {
+  const [openAuth,setOpenAuth]=useState(false);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThemeProvider theme={lightTheme} className='App'>
+      <BrowserRouter>
+        <Navbar setOpenAuth={setOpenAuth}/>
+        <Container>
+          <Routes>
+            <Route path='/' exact element={<Home />} />
+            <Route path='/Shop' exact element={<Shop />} />
+            <Route path='/' exact element={<Home />} />
+            <Route path='/' exact element={<Home />} />
+          </Routes>
+
+          {openAuth && <Authentication openAuth={openAuth} setOpenAuth={setOpenAuth}/>}
+
+        </Container>
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }
 
