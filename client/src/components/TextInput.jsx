@@ -10,7 +10,8 @@ const Container = styled.div`
 `;
 
 const Label = styled.label`
-  font-size: 12px;
+  font-size: 18px;
+  margin-top:20px;
   color: ${({ theme }) => theme.primary};
   padding: 0px 4px;
   ${({ error, theme }) =>
