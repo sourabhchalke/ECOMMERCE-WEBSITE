@@ -12,6 +12,7 @@ import {
 
 // Define styled components
 const Nav = styled.div`
+  width: 100%;
   background-color: ${({ theme }) => theme.bg};
   height: 80px;
   display: flex;
@@ -23,12 +24,15 @@ const Nav = styled.div`
 `;
 const NavbarContainer = styled.div`
   width: 100%;
-  max-width: 1400px;
   display: flex;
+  padding:0px 20px;
   gap: 14px;
   align-items: center;
   justify-content: space-between;
   font-size: 1rem;
+  @media screen and (max-width:320px){
+    padding:0px 10px;
+  }
 `;
 const NavLogo = styled.div`
   width: 100%;
@@ -56,7 +60,7 @@ const NavItems = styled.ul`
   }
 `;
 const ButtonContainer = styled.div`
- width: 100%;
+  width: 100%;
   height: 100%;
   display: flex;
   justify-content: flex-end;
@@ -76,7 +80,7 @@ const Navlink = styled(NavLink)`
   cursor: pointer;
   transition: all 1s slide-in;
   text-decoration: none;
-   &:hover {
+  &:hover {
     color: ${({ theme }) => theme.primary};
   }
   &.active {
@@ -86,53 +90,49 @@ const Navlink = styled(NavLink)`
 `;
 
 const MobileIcon = styled.div`
-  color:${({theme})=> theme.text_primary};
-  display:none;
-   @media screen and (max-width: 768px) {
+  color: ${({ theme }) => theme.text_primary};
+  display: none;
+  @media screen and (max-width: 768px) {
     display: flex;
-    align-items:center;
+    align-items: center;
   }
 `;
 
 const MobileIcons = styled.div`
-  color:${({theme})=> theme.text_primary};
-  display:none;
+  color: ${({ theme }) => theme.text_primary};
+  display: none;
   @media screen and (max-width: 768px) {
     display: flex;
-    align-items:center;
-    justify-content:center;
-    // gap:7px;
+    align-items: center;
+    justify-content: center;
   }
 `;
 
 const MobileMenu = styled.div`
-  display:flex;
-  flex-direction:column;
-  align-items:left;
-  // gap:14px;
-  // padding: 0 6px;
-  // list-style:none;
-  width:80%;
-  padding:12px 40px 24px 40px;
-  // background:${({theme})=> theme.black + 99};
-  position:absolute;
-  top:80px;
-  right:0;
-  transition:all 0.6s ease-in-out;
-  transition:${({isOpen})=>isOpen?'translateY(0)':'translateY(-100%)'};
-  border-radius:0 0 20px 20px;
-  box-shadow:0 0 10px 0 rgba(0,0,0,0.2);
-  opacity:${({isOpen})=>(isOpen ? '100%' : '0')};
-  z-index:${({isOpen})=>(isOpen ? '1000' : '-1000')};
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  width: 80%;
+  padding: 12px 40px 24px 40px;
+  position: absolute;
+  top: 80px;
+  right: 0;
+  transition: all 0.6s ease-in-out;
+  transition: ${({ isOpen }) =>
+    isOpen ? "translateY(0)" : "translateY(-100%)"};
+  border-radius: 0 0 20px 20px;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+  opacity: ${({ isOpen }) => (isOpen ? "100%" : "0")};
+  z-index: ${({ isOpen }) => (isOpen ? "1000" : "-1000")};
 `;
 
-function Navbar({setOpenAuth,openAuth}) {
-  const [isOpen,setIsOpen]= useState(false);
+function Navbar({ setOpenAuth, openAuth }) {
+  const [isOpen, setIsOpen] = useState(false);
   return (
     <Nav>
       <NavbarContainer>
-        <MobileIcon onClick={()=> setIsOpen(!isOpen)}>
-          <MenuRounded/>
+        <MobileIcon onClick={() => setIsOpen(!isOpen)}>
+          <MenuRounded />
         </MobileIcon>
         <NavLogo>
           <Logo src={LogoImg} />
@@ -145,20 +145,30 @@ function Navbar({setOpenAuth,openAuth}) {
           <Navlink to="/Contact">Contact</Navlink>
         </NavItems>
 
-      {isOpen && (
-        <MobileMenu isOpen={isOpen}>
-        <Navlink to="/" onClick={()=> setIsOpen(!isOpen)}>Home</Navlink>
-          <Navlink to="/Shop" onClick={()=> setIsOpen(!isOpen)}>Shop</Navlink>
-          <Navlink to="/New_Arrivals" onClick={()=> setIsOpen(!isOpen)}>New Arrivals</Navlink>
-          <Navlink to="/Orders" onClick={()=> setIsOpen(!isOpen)}>Orders</Navlink>
-          <Navlink to="/Contact" onClick={()=> setIsOpen(!isOpen)}>Contact</Navlink>
-          <Button text="SignUp" outlined/>
-          <Button text="SignIn"  onClick={()=>setOpenAuth(!openAuth)}/>
-        </MobileMenu>
-      )}
+        {isOpen && (
+          <MobileMenu isOpen={isOpen}>
+            <Navlink to="/" onClick={() => setIsOpen(!isOpen)}>
+              Home
+            </Navlink>
+            <Navlink to="/Shop" onClick={() => setIsOpen(!isOpen)}>
+              Shop
+            </Navlink>
+            <Navlink to="/New_Arrivals" onClick={() => setIsOpen(!isOpen)}>
+              New Arrivals
+            </Navlink>
+            <Navlink to="/Orders" onClick={() => setIsOpen(!isOpen)}>
+              Orders
+            </Navlink>
+            <Navlink to="/Contact" onClick={() => setIsOpen(!isOpen)}>
+              Contact
+            </Navlink>
+            <Button text="SignUp" outlined />
+            <Button text="SignIn" onClick={() => setOpenAuth(!openAuth)} />
+          </MobileMenu>
+        )}
 
         <MobileIcons>
-        <Navlink to="/search">
+          <Navlink to="/search">
             <SearchRounded sx={{ color: "inherit", fontSize: "24px" }} />
           </Navlink>
           <Navlink to="/favourite">
@@ -167,7 +177,7 @@ function Navbar({setOpenAuth,openAuth}) {
           <Navlink to="/cart">
             <ShoppingCartOutlined sx={{ color: "inherit", fontSize: "24px" }} />
           </Navlink>
-          <Button text="SignIn" onClick={()=>setOpenAuth(!openAuth)}/>
+          <Button text="SignIn" onClick={() => setOpenAuth(!openAuth)} />
         </MobileIcons>
 
         <ButtonContainer>
@@ -180,7 +190,7 @@ function Navbar({setOpenAuth,openAuth}) {
           <Navlink to="/cart">
             <ShoppingCartOutlined sx={{ color: "inherit", fontSize: "24px" }} />
           </Navlink>
-          <Button text="SignIn" onClick={()=>setOpenAuth(!openAuth)}/>
+          <Button text="SignIn" onClick={() => setOpenAuth(!openAuth)} />
         </ButtonContainer>
       </NavbarContainer>
     </Nav>
