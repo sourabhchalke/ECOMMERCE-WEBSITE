@@ -14,6 +14,7 @@ const Button = styled.div`
   gap: 6px;
   height: min-content;
   padding: 16px 26px;
+  margin:15px 0;
   box-shadow: 1px 20px 35px 0px ${({ theme }) => theme.primary + 40};
   border: 1px solid ${({ theme }) => theme.primary};
   @media (max-width: 600px) {
