@@ -1,6 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 import homeImg from "../utils/Images/Header.png";
+import  {category}  from "../utils/data";
+import ProductCategoryCard from '../components/cards/ProductCategoryCard';
 
 // Css
 const Container = styled.div`
@@ -24,11 +26,42 @@ const Img = styled.img`
   object-fit: cover;
 `;
 
+const Title=styled.p`
+  font-size:28px;
+  font-weight:500px;
+  display:flex;
+  justify-content:${({center})=>(center?"center":"center")};
+  align-items:center;
+`;
+const CardWrapper=styled.div`
+  display:flex;
+  flex-wrap:wrap;
+  gap:24px;
+  justify-content:center;
+`;
+
 function Home() {
   return (
     <Container>
       <Section>
         <Img src={homeImg} />
+      </Section>
+
+      <Section>
+        <Title>Shop By Categories</Title>
+
+        <CardWrapper>
+          {category.map((category)=>{
+            
+            return  <ProductCategoryCard category={category} />
+            
+          })}
+        </CardWrapper>
+
+      </Section>
+
+      <Section>
+        <Title>Our BestSeller</Title>
       </Section>
     </Container>
   );
