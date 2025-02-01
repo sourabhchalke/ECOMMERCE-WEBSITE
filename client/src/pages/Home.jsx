@@ -1,14 +1,15 @@
 import React from "react";
 import styled from "styled-components";
 import homeImg from "../utils/Images/Header.png";
-import  {category}  from "../utils/data";
-import ProductCategoryCard from '../components/cards/ProductCategoryCard';
+import { category } from "../utils/data";
+import ProductCategoryCard from "../components/cards/ProductCategoryCard";
+import ProductCard from "../components/cards/ProductCard";
 
 // Css
 const Container = styled.div`
   padding: 20px 20px;
   height: 100%;
-  width:100%;
+  width: 100%;
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -17,27 +18,26 @@ const Container = styled.div`
   }
   background: ${({ theme }) => theme.bg};
 `;
-const Section = styled.div`
- 
-`;
+const Section = styled.div``;
 const Img = styled.img`
   width: 100%;
   height: 700px;
   object-fit: cover;
 `;
 
-const Title=styled.p`
-  font-size:28px;
-  font-weight:500px;
-  display:flex;
-  justify-content:${({center})=>(center?"center":"center")};
-  align-items:center;
+const Title = styled.p`
+  margin: 50px 0px;
+  font-size: 28px;
+  font-weight: 500px;
+  display: flex;
+  justify-content: ${({ center }) => (center ? "center" : "center")};
+  align-items: center;
 `;
-const CardWrapper=styled.div`
-  display:flex;
-  flex-wrap:wrap;
-  gap:24px;
-  justify-content:center;
+const CardWrapper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  justify-content: center;
 `;
 
 function Home() {
@@ -51,17 +51,20 @@ function Home() {
         <Title>Shop By Categories</Title>
 
         <CardWrapper>
-          {category.map((category)=>{
-            
-            return  <ProductCategoryCard category={category} />
-            
+          {category.map((category) => {
+            return <ProductCategoryCard category={category} />;
           })}
         </CardWrapper>
-
       </Section>
 
       <Section>
         <Title>Our BestSeller</Title>
+        <CardWrapper>
+          <ProductCard />
+          <ProductCard />
+          <ProductCard />
+          <ProductCard />
+        </CardWrapper>
       </Section>
     </Container>
   );
