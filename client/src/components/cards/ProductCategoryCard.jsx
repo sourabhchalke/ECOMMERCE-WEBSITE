@@ -8,7 +8,7 @@ const Card = styled.div`
   flex-direction: column;
   transition: all 0.3s ease-out;
   cursor: pointer;
-
+  margin:30px 0px;
   @media screen and (max-width: 320px) {
     width: 250px;
   }
