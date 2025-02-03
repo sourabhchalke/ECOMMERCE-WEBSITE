@@ -8,6 +8,7 @@ import Navbar from './components/Navbar';
 
 import Home from './pages/Home';
 import Shop from './pages/ShopListing';
+import Favourite from './pages/Favourite';
 import Authentication from './pages/Authentication';
 
 import { useState } from 'react';
@@ -35,7 +36,7 @@ function App() {
           <Routes>
             <Route path='/' exact element={<Home />} />
             <Route path='/Shop' exact element={<Shop />} />
-            <Route path='/' exact element={<Home />} />
+            <Route path='/favourite' exact element={<Favourite />} />
             <Route path='/' exact element={<Home />} />
           </Routes>
 

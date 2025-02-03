@@ -2,7 +2,6 @@ import React from "react";
 import styled from "styled-components";
 import { Rating } from "@mui/material";
 import {
-  FavoriteRounded,
   AddShoppingCartOutlined,
   FavoriteBorder,
 } from "@mui/icons-material";
@@ -129,6 +128,9 @@ function ProductCard() {
             <AddShoppingCartOutlined
               sx={{ color: "inherit", fontSize: "20px" }}
             />
+          
+          </MenuItem>
+          <MenuItem>
             <FavoriteBorder sx={{ color: "red", fontSize: "20px" }} />
           </MenuItem>
         </Menu>
