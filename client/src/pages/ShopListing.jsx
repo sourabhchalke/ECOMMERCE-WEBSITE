@@ -44,11 +44,11 @@ const CardWrapper=styled.div``;
 const SelectableItem=styled.div``;
 const Item=styled.div``;
 const Slider=styled.div``;
-const CircularProgress=styled.div``;
+// const CircularProgress=styled.div``;
 
 function ShopListing() {
-  const [loading, setLoading] = useState(false);
-  const [products, setProducts] = useState([]);
+  // const [loading, setLoading] = useState(false);
+  // const [products, setProducts] = useState([]);
   const [priceRange, setPriceRange] = useState([0, 1000]);
   const [selectedSizes, setSelectedSizes] = useState(["S", "M", "L", "XL"]); // Default selected sizes
   const [selectedCategories, setSelectedCategories] = useState([
@@ -59,9 +59,9 @@ function ShopListing() {
   ]); // Default selected categories
   return (
     <Container>
-      {loading ? (
+      {/* {loading ? (
         <CircularProgress />
-      ) : (
+      ) : ( */}
         <>
           <Filters>
             <Menu>
@@ -136,7 +136,7 @@ function ShopListing() {
             </CardWrapper>
           </Products>
         </>
-      )}
+      {/* )} */}
     </Container>
   )
 }
