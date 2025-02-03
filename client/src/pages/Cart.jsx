@@ -1,27 +1,25 @@
 import React from "react";
 import styled from "styled-components";
+import TextInput from "../components/TextInput";
+import Button from "../components/Button";
 
 const Container = styled.div`
+  width:100%;
   padding: 20px 10px;
-  padding-bottom: 200px;
-  height: 100%;
   display: flex;
-  // align-items: center;
+  align-items: center;
   flex-direction: column;
   gap: 30px;
-  @media (max-width: 768px) {
-  
-  }
   background: ${({ theme }) => theme.bg};
+
 `;
 const Section = styled.div`
- width: 100%;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   font-size: 22px;
   gap: 28px;
-  // border:2px solid green;
 `;
 const Title = styled.p`
   font-size: 28px;
@@ -32,7 +30,7 @@ const Title = styled.p`
 `;
 
 const Wrapper = styled.div`
-   display: flex;
+  display: flex;
   gap: 32px;
   width: 100%;
   // padding: 12px;
@@ -40,6 +38,7 @@ const Wrapper = styled.div`
     flex-direction: column;
   }
 `;
+// Left Part Start
 const Left = styled.div`
   flex: 1;
   display: flex;
@@ -50,58 +49,56 @@ const Left = styled.div`
     flex: 1.2;
   }
 `;
-const Table=styled.div`
+const Table = styled.div`
   font-size: 16px;
   display: flex;
   align-items: center;
   gap: 8px;
   ${({ head }) => head && `margin-bottom: 22px`}
 `;
-const TableItem=styled.div`
-   ${({ flex }) => flex && `flex: 1; `}
+const TableItem = styled.div`
+  ${({ flex }) => flex && `flex: 1; `}
   ${({ bold }) =>
     bold &&
     `font-weight: 600; 
   font-size: 18px;`}
 `;
 
-const Counter=styled.div`
-   display: flex;
+const Counter = styled.div`
+  display: flex;
   gap: 10px;
   border: 1px solid ${({ theme }) => theme.text_secondary + 40};
   border-radius: 8px;
   padding: 4px 12px;
 `;
-const Product=styled.div`
-  border:1px solid red;
-   display: flex;
+const Product = styled.div`
+  display: flex;
   gap: 14px;
 `;
-const Img=styled.img`
-  height:60px;
+const Img = styled.img`
+  height: 60px;
 `;
-const Details=styled.div``;
-const Protitle=styled.div`
-  font-size:16px;
-  font-weight:500;
-  color:${({theme})=>theme.primary};
+const Details = styled.div``;
+const Protitle = styled.div`
+  font-size: 16px;
+  font-weight: 500;
+  color: ${({ theme }) => theme.primary};
 `;
-const Prodes=styled.div`
- font-size: 14px;
+const Prodes = styled.div`
+  font-size: 14px;
   font-weight: 400;
   color: ${({ theme }) => theme.text_primary};
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 `;
-const Prosize=styled.div`
-   font-size:14px;
-  font-weight:500;
+const Prosize = styled.div`
+  font-size: 14px;
+  font-weight: 500;
 `;
-
+// Right Part Start
 const Right = styled.div`
   flex: 1;
-  background: ${({ theme }) => theme.secondary};
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -109,6 +106,19 @@ const Right = styled.div`
   @media screen and (max-width: 750px) {
     flex: 1.2;
   }
+`;
+const Subtotal = styled.div`
+  font-size: 22px;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+`;
+const Delivery = styled.div`
+  font-size: 18px;
+  font-weight: 500;
+  display: flex;
+  gap: 0px;
+  flex-direction: column;
 `;
 function Cart() {
   return (
@@ -118,15 +128,15 @@ function Cart() {
         <Wrapper>
           <Left>
             <Table>
-              <TableItem bold>Product</TableItem>
+              <TableItem bold flex>Product</TableItem>
               <TableItem>Price</TableItem>
               <TableItem>Quantity</TableItem>
               <TableItem>SubTotal</TableItem>
             </Table>
             <Table>
-              <TableItem>
+              <TableItem flex>
                 <Product>
-                  <Img src="https://i.pinimg.com/236x/4c/6e/a8/4c6ea85bec9a25c43b159af08d4361cb.jpg"/>
+                  <Img src="https://i.pinimg.com/236x/4c/6e/a8/4c6ea85bec9a25c43b159af08d4361cb.jpg" />
                   <Details>
                     <Protitle>Title</Protitle>
                     <Prodes>Description</Prodes>
@@ -143,7 +153,35 @@ function Cart() {
               <TableItem>1000</TableItem>
             </Table>
           </Left>
-          <Right>R</Right>
+
+          <Right>
+            <Subtotal>Subtotal : 120.89</Subtotal>
+            <Delivery>
+              Delivery Details
+              <div>
+                <div style={{ display: "flex", gap: "4px" }}>
+                  <TextInput placeholder="First Name" />
+                  <TextInput placeholder="Last Name" />
+                </div>
+                <TextInput placeholder="Email Address" />
+                <TextInput placeholder="Phone No. +91 xxxxx xxxxx" />
+                <TextInput placeholder="Complete Address [Country,State,City,Pincode]" />
+              </div>
+            </Delivery>
+
+            <Delivery>
+              Payment Details
+              <div>
+                <TextInput placeholder="Card Number" />
+                <div style={{ display: "flex", gap: "4px" }}>
+                  <TextInput placeholder="Expiry Date" />
+                  <TextInput placeholder="CVV" />
+                </div>
+                <TextInput placeholder="Card Holder Name" />
+                  <Button text="Place Order"/>
+              </div>
+            </Delivery>
+          </Right>
         </Wrapper>
       </Section>
     </Container>
