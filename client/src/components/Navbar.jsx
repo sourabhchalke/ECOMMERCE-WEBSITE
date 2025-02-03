@@ -177,7 +177,7 @@ function Navbar({ setOpenAuth, openAuth }) {
           <Navlink to="/cart">
             <ShoppingCartOutlined sx={{ color: "inherit", fontSize: "24px" }} />
           </Navlink>
-          <Button text="SignIn" onClick={() => setOpenAuth(!openAuth)} />
+          {/* <Button text="SignIn" onClick={() => setOpenAuth(!openAuth)} /> */}
         </MobileIcons>
 
         <ButtonContainer>
