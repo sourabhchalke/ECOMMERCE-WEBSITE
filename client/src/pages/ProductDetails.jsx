@@ -152,7 +152,7 @@ function ProductDetails() {
                 <ButtonWrapper>
                     <Button text="Add to Cart" outlined/>
                     <Button text="Buy Now"/>
-                    <Button outlined text="" leftIcon={<FavoriteBorder /> }/>
+                    <Button outlined  leftIcon={<FavoriteBorder /> }/>
                 </ButtonWrapper>
             </Details>
         </Wrapper>
