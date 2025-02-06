@@ -19,9 +19,10 @@ require('dotenv').config();
         const hashPassword = await bcrypt.hash(password,10);
         console.log(hashPassword);
 
+        const token = jwt.sign({email},process.env.SECRET_KEY);
+        console.log(token);
+
         
-
-
 
 
 
