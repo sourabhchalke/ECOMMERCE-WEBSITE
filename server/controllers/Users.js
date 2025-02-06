@@ -3,36 +3,44 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
-  const UserRegister = async(req,res,next)=>{
+const UserRegister = async (req, res) => {
 
-    try{
-        const {name,email,password}=req.body;
-        console.log(name);
+    try {
+        const { name, email, password, img } = req.body;
+
         console.log(req.body);
 
-        const User = await UserSchema.findOne({email});
+        const User = await UserSchema.findOne({ email });
 
-        console.log(User);
+        // Check user already exists or not
+        if (User) { return res.status(400).send("User Already Exists") };
+        // Convert plain password into hashed password
+        const hashPassword = await bcrypt.hash(password, 10);
 
-        if(User){return res.status(400).send("User Already Exists")};
+        // Create new User 
+        const NewUser = new UserSchema({
+            name,
+            email,
+            password: hashPassword,
+            img
+        });
 
-        const hashPassword = await bcrypt.hash(password,10);
-        console.log(hashPassword);
+        // Save the record
+       const createUser= await NewUser.save();
 
-        const token = jwt.sign({email},process.env.SECRET_KEY);
-        console.log(token);
+        // Create token using jsonwebtoken
+        const token = jwt.sign({ id:createUser._id }, process.env.SECRET_KEY, { expiresIn: "1h" });
 
-        
+        console.log("Data Inserted Successfull");
 
+        return res.status(201).json({ message: "User Registered Successfully", token });
 
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: "Internal Server Error" });
 
-
-        next();
-    }catch(error){
-        return res.status(400).send(error);
     }
 
-    
 }
 
-module.exports=UserRegister;
+module.exports = UserRegister;
