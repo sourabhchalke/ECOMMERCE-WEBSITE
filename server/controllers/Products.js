@@ -84,4 +84,26 @@ const getProduct=async(req,res)=>{
 
 };
 
-module.exports={addProduct,getProduct};
+const getProductById = async(req,res)=>{
+    try{
+        const {id}=req.params;
+
+        if(!mongoose.isValidObjectId(id)){
+            return res.status(400).send("Invalid product ID");
+        }
+
+        const product = await ProductSchema.findById(id);
+
+        if(!product){
+            return res.status(400).send("Product not found");
+        }
+
+        return res.status(200).json(product);
+
+    }catch(error){
+        console.log(error);
+        return res.status(400).send("Something went wrong");
+    }
+}
+
+module.exports={addProduct,getProduct,getProductById};
