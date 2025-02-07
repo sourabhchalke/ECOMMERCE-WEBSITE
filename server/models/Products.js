@@ -29,6 +29,14 @@ const ProductSchema = new mongoose.Schema({
             off:0,
         }
     },
-})
+    size:{
+        type:[String],
+        default:[],
+    },
+    category:{
+        type:[String],
+        default:[],
+    },
+},{timestamps:true});
 
 export default mongoose.model("Products",ProductSchema,"Products");
