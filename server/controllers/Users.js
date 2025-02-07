@@ -43,4 +43,36 @@ const UserRegister = async (req, res) => {
 
 }
 
-module.exports = UserRegister;
+const UserLogin = async(req,res)=>{
+
+    try {
+        const { email,password } = req.body;
+
+        console.log(req.body);
+
+        const ExistsUser = await UserSchema.findOne({ email });
+
+        // Check user already exists or not
+        if (!ExistsUser) { return res.status(400).send("User Not Found") };
+
+        const isPasswordMatch=await bcrypt.compare(password,ExistsUser.password);
+
+        if(!isPasswordMatch){
+            return res.status(404).send("Incorect Password");
+        }
+
+        // Create token using jsonwebtoken
+        const token = jwt.sign({ id:ExistsUser._id }, process.env.SECRET_KEY, { expiresIn: "1h" });
+
+        console.log("Login Successfull");
+
+        return res.status(201).json({ message: "User Login Successfully", token });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: "Internal Server Error" });
+
+    }
+}
+
+module.exports = {UserRegister,UserLogin};
