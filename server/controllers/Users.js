@@ -73,6 +73,37 @@ const UserLogin = async(req,res)=>{
         return res.status(500).json({ error: "Internal Server Error" });
 
     }
+};
+
+const AddToCart = async(req,res)=>{
+    try{
+
+        const {productId,quantity}=req.body;
+        console.log(productId,quantity);
+
+        const userJWT=req.user;
+        const user= await UserSchema.findById(userJWT.id);
+
+        const existingCartItemIndex = user.cart.findIndex((item)=>item.product.equals(productId));
+
+        if(existingCartItemIndex!==-1){
+            // Product is already in the cart, update the quantity
+            user.cart[existingCartItemIndex].quantity+= quantity;
+        }else{
+            // Product is not in the cart, add it
+            user.cart.push({product:productId,quantity});
+        }
+
+        await user.save();
+
+        return res.status(200).send("Product added to cart successfully",user);
+
+        return res.status(200).send("Added Successfully");
+
+    }catch(error){
+        console.log(error);
+        return res.status(400).send("Something went wrong. Please try again later");
+    }
 }
 
-module.exports = {UserRegister,UserLogin};
+module.exports = {UserRegister,UserLogin,AddToCart};
