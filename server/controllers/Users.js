@@ -1,4 +1,5 @@
 const UserSchema = require('../models/Users');
+const OrderSchema = require('../models/Orders');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
@@ -26,10 +27,10 @@ const UserRegister = async (req, res) => {
         });
 
         // Save the record
-       const createUser= await NewUser.save();
+        const createUser = await NewUser.save();
 
         // Create token using jsonwebtoken
-        const token = jwt.sign({ id:createUser._id }, process.env.SECRET_KEY, { expiresIn: "1h" });
+        const token = jwt.sign({ id: createUser._id }, process.env.SECRET_KEY, { expiresIn: "1h" });
 
         console.log("Data Inserted Successfull");
 
@@ -43,10 +44,10 @@ const UserRegister = async (req, res) => {
 
 }
 
-const UserLogin = async(req,res)=>{
+const UserLogin = async (req, res) => {
 
     try {
-        const { email,password } = req.body;
+        const { email, password } = req.body;
 
         console.log(req.body);
 
@@ -55,14 +56,14 @@ const UserLogin = async(req,res)=>{
         // Check user already exists or not
         if (!ExistsUser) { return res.status(400).send("User Not Found") };
 
-        const isPasswordMatch=await bcrypt.compare(password,ExistsUser.password);
+        const isPasswordMatch = await bcrypt.compare(password, ExistsUser.password);
 
-        if(!isPasswordMatch){
+        if (!isPasswordMatch) {
             return res.status(404).send("Incorect Password");
         }
 
         // Create token using jsonwebtoken
-        const token = jwt.sign({ id:ExistsUser._id }, process.env.SECRET_KEY, { expiresIn: "1h" });
+        const token = jwt.sign({ id: ExistsUser._id }, process.env.SECRET_KEY, { expiresIn: "1h" });
 
         console.log("Login Successfull");
 
@@ -75,60 +76,60 @@ const UserLogin = async(req,res)=>{
     }
 };
 
-const AddToCart = async(req,res)=>{
-    try{
+const AddToCart = async (req, res) => {
+    try {
 
-        const {productId,quantity}=req.body;
-        console.log(productId,quantity);
+        const { productId, quantity } = req.body;
+        console.log(productId, quantity);
 
-        const userJWT=req.user;
-        const user= await UserSchema.findById(userJWT.id);
+        const userJWT = req.user;
+        const user = await UserSchema.findById(userJWT.id);
 
-        const existingCartItemIndex = user.cart.findIndex((item)=>item.product.equals(productId));
+        const existingCartItemIndex = user.cart.findIndex((item) => item.product.equals(productId));
 
-        if(existingCartItemIndex!==-1){
+        if (existingCartItemIndex !== -1) {
             // Product is already in the cart, update the quantity
-            user.cart[existingCartItemIndex].quantity+= quantity;
-        }else{
+            user.cart[existingCartItemIndex].quantity += quantity;
+        } else {
             // Product is not in the cart, add it
-            user.cart.push({product:productId,quantity});
+            user.cart.push({ product: productId, quantity });
         }
 
         await user.save();
 
-        return res.status(200).send("Product added to cart successfully",user);
+        return res.status(200).send("Product added to cart successfully", user);
 
-    }catch(error){
+    } catch (error) {
         console.log(error);
         return res.status(400).send("Something went wrong. Please try again later");
     }
 };
 
-const RemoveFromCart = async(req,res)=>{
-    try{
+const RemoveFromCart = async (req, res) => {
+    try {
 
-        const {productId,quantity}=req.body;
-        console.log(productId,quantity);
+        const { productId, quantity } = req.body;
+        console.log(productId, quantity);
 
-        const userJWT=req.user;
-        const user= await UserSchema.findById(userJWT.id);
+        const userJWT = req.user;
+        const user = await UserSchema.findById(userJWT.id);
 
-        if(!user){
+        if (!user) {
             return res.status(400).send("User Not Found");
         }
 
-        const productIndex=user.cart.findIndex((item)=>item.product.equals(productId));
+        const productIndex = user.cart.findIndex((item) => item.product.equals(productId));
 
-        if(productIndex!==-1){
-            if(quantity && quantity > 0){
-                user.cart[productIndex].quantity-=quantity;
+        if (productIndex !== -1) {
+            if (quantity && quantity > 0) {
+                user.cart[productIndex].quantity -= quantity;
 
-                if(user.cart[productIndex].quantity<=0){
-                    user.cart.splice(productIndex,1);
+                if (user.cart[productIndex].quantity <= 0) {
+                    user.cart.splice(productIndex, 1);
                 }
 
-            }else{
-                user.cart.splice(productIndex,1);
+            } else {
+                user.cart.splice(productIndex, 1);
             }
 
             await user.save();
@@ -136,12 +137,30 @@ const RemoveFromCart = async(req,res)=>{
             return res.status(200).send("Product quantity updated in cart");
         }
 
-    }catch(error){
+    } catch (error) {
+        console.log(error);
+        return res.status(400).send("Something went wrong. Please try again later");
+    }
+};
+
+const getAllCartItems = async (req, res) => {
+    try {
+
+        const userJWT = req.user;
+        const user = await UserSchema.findById(userJWT.id).populate({
+            path: "cart.product",
+            model: "Products",
+        });
+
+        const cartItems = user.cart;
+
+        return res.status(200).send(cartItems);
+
+    } catch (error) {
         console.log(error);
         return res.status(400).send("Something went wrong. Please try again later");
     }
 };
 
 
-
-module.exports = {UserRegister,UserLogin,AddToCart,RemoveFromCart};
+module.exports = { UserRegister, UserLogin, AddToCart, RemoveFromCart, getAllCartItems};
