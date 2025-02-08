@@ -162,5 +162,32 @@ const getAllCartItems = async (req, res) => {
     }
 };
 
+const PlaceOrder = async (req, res) => {
+    try {
 
-module.exports = { UserRegister, UserLogin, AddToCart, RemoveFromCart, getAllCartItems};
+        const {products,address,totalAmount}=req.body;
+
+        const userJWT = req.user;
+         const user=await UserSchema.findById(userJWT.id);
+
+         const order = new OrderSchema({
+            products,
+            user:user._id,
+            total_amount:totalAmount,
+            address,
+         });
+
+         await order.save();
+
+         user.cart=[];
+         await user.save();
+
+         return res.status(200).send("Order Placed Successfully");
+
+
+    } catch (error) {
+        console.log(error);
+        return res.status(400).send("Something went wrong. Please try again later");
+    }
+}
+module.exports = { UserRegister, UserLogin, AddToCart, RemoveFromCart, getAllCartItems,PlaceOrder };
