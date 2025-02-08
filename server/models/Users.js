@@ -18,6 +18,27 @@ const UserSchema= new mongoose.Schema({
         type:String,
         default:null,
     },
+
+    cart: {
+        type: [
+          {
+            product: { type: mongoose.Schema.Types.ObjectId, ref: "Products" },
+            quantity: { type: Number, default: 1 },
+          },
+        ],
+        default: [],
+      },
+      favourites: {
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: "Products",
+        default: [],
+      },
+      orders: {
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: "Shopping-Orders",
+        default: [],
+      },
+
 },{timestamps:true});
 
 module.exports = mongoose.model("User",UserSchema,"User");
