@@ -98,12 +98,50 @@ const AddToCart = async(req,res)=>{
 
         return res.status(200).send("Product added to cart successfully",user);
 
-        return res.status(200).send("Added Successfully");
+    }catch(error){
+        console.log(error);
+        return res.status(400).send("Something went wrong. Please try again later");
+    }
+};
+
+const RemoveFromCart = async(req,res)=>{
+    try{
+
+        const {productId,quantity}=req.body;
+        console.log(productId,quantity);
+
+        const userJWT=req.user;
+        const user= await UserSchema.findById(userJWT.id);
+
+        if(!user){
+            return res.status(400).send("User Not Found");
+        }
+
+        const productIndex=user.cart.findIndex((item)=>item.product.equals(productId));
+
+        if(productIndex!==-1){
+            if(quantity && quantity > 0){
+                user.cart[productIndex].quantity-=quantity;
+
+                if(user.cart[productIndex].quantity<=0){
+                    user.cart.splice(productIndex,1);
+                }
+
+            }else{
+                user.cart.splice(productIndex,1);
+            }
+
+            await user.save();
+
+            return res.status(200).send("Product quantity updated in cart");
+        }
 
     }catch(error){
         console.log(error);
         return res.status(400).send("Something went wrong. Please try again later");
     }
-}
+};
 
-module.exports = {UserRegister,UserLogin,AddToCart};
+
+
+module.exports = {UserRegister,UserLogin,AddToCart,RemoveFromCart};
