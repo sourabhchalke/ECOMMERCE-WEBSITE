@@ -5,7 +5,6 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 const UserRegister = async (req, res) => {
-
     try {
         const { name, email, password, img } = req.body;
 
@@ -13,12 +12,12 @@ const UserRegister = async (req, res) => {
 
         const User = await UserSchema.findOne({ email });
 
-        // Check user already exists or not
-        if (User) { return res.status(400).send("User Already Exists") };
-        // Convert plain password into hashed password
+        if (User) {
+            return res.status(400).json({ error: "User Already Exists" });
+        }
+
         const hashPassword = await bcrypt.hash(password, 10);
 
-        // Create new User 
         const NewUser = new UserSchema({
             name,
             email,
@@ -26,26 +25,27 @@ const UserRegister = async (req, res) => {
             img
         });
 
-        // Save the record
         const createUser = await NewUser.save();
 
-        // Create token using jsonwebtoken
+        // Ensure SECRET_KEY is defined
+        if (!process.env.SECRET_KEY) {
+            console.error("SECRET_KEY is not defined in environment variables");
+            return res.status(500).json({ error: "Server error, try again later" });
+        }
+
         const token = jwt.sign({ id: createUser._id }, process.env.SECRET_KEY, { expiresIn: "1h" });
 
-        console.log("Data Inserted Successfull");
+        console.log("User Registered Successfully, Token:", token);
 
-        return res.status(200).json({ message: "User registered successfully" });
+        return res.status(200).json({ message: "User registered successfully", token });
 
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: "Internal Server Error" });
-
     }
-
-}
+};
 
 const UserLogin = async (req, res) => {
-
     try {
         const { email, password } = req.body;
 
@@ -53,26 +53,30 @@ const UserLogin = async (req, res) => {
 
         const ExistsUser = await UserSchema.findOne({ email });
 
-        // Check user already exists or not
-        if (!ExistsUser) { return res.status(400).send("User Not Found") };
+        if (!ExistsUser) {
+            return res.status(400).json({ error: "User Not Found" });
+        }
 
         const isPasswordMatch = await bcrypt.compare(password, ExistsUser.password);
 
         if (!isPasswordMatch) {
-            return res.status(404).send("Incorect Password");
+            return res.status(404).json({ error: "Incorrect Password" });
         }
 
-        // Create token using jsonwebtoken
+        if (!process.env.SECRET_KEY) {
+            console.error("SECRET_KEY is not defined in environment variables");
+            return res.status(500).json({ error: "Server error, try again later" });
+        }
+
         const token = jwt.sign({ id: ExistsUser._id }, process.env.SECRET_KEY, { expiresIn: "1h" });
 
-        console.log("Login Successfull");
+        console.log("Login Successful, Token:", token);
 
-        return res.status(201).json({ message: "User Login Successfully", token });
+        return res.status(200).json({ message: "User Login Successfully", token });
 
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: "Internal Server Error" });
-
     }
 };
 
@@ -269,15 +273,14 @@ const getUserFavourites = async(req,res)=>{
 }
 
 module.exports = {
-    UserRegister,
-    UserLogin,
-    AddToCart,
-    RemoveFromCart,
-    getAllCartItems,
-    PlaceOrder,
-    getAllOrders,
-    AddToFavorites,
-    RemoveFromFavorites,
-    getUserFavourites,
-  };
-  
+  UserRegister,
+  UserLogin,
+  AddToCart,
+  RemoveFromCart,
+  getAllCartItems,
+  PlaceOrder,
+  getAllOrders,
+  AddToFavorites,
+  RemoveFromFavorites,
+  getUserFavourites,
+};
