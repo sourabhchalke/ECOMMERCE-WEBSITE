@@ -206,6 +206,45 @@ const getAllOrders = async(req,res)=>{
     }
 };
 
+const AddToFavorites = async(req,res)=>{
+    try{
 
+        const {productId}=req.body;
+        const userJWT = req.user;
 
-module.exports = { UserRegister, UserLogin, AddToCart, RemoveFromCart, getAllCartItems,PlaceOrder,getAllOrders };
+        const user = await UserSchema.findById(userJWT.id);
+
+        if(!user.favourites.includes(productId)){
+            user.favourites.push(productId);
+            await user.save();
+        }
+
+        return res.status(200).send("Product added to favorites successfully",user);
+
+    }catch (error) {
+        console.log(error);
+        return res.status(400).send("Something went wrong. Please try again later");
+    }
+};
+
+const RemoveFromFavorites = async(req,res)=>{
+    try{
+
+        const {productId}=req.body;
+        const userJWT = req.user;
+
+        const user = await UserSchema.findById(userJWT.id);
+        
+        user.favourites = user.favourites.filter((fav)=> !fav.equals(productId));
+
+        await user.save();
+
+        return res.status(200).send("Product remove from favorites successfully",user);
+
+    }catch (error) {
+        console.log(error);
+        return res.status(400).send("Something went wrong. Please try again later");
+    }
+};
+
+module.exports = { UserRegister, UserLogin, AddToCart, RemoveFromCart, getAllCartItems,PlaceOrder,getAllOrders ,AddToFavorites,RemoveFromFavorites};
