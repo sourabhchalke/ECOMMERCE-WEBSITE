@@ -189,5 +189,23 @@ const PlaceOrder = async (req, res) => {
         console.log(error);
         return res.status(400).send("Something went wrong. Please try again later");
     }
-}
-module.exports = { UserRegister, UserLogin, AddToCart, RemoveFromCart, getAllCartItems,PlaceOrder };
+};
+
+const getAllOrders = async(req,res)=>{
+    try{
+
+        const user = req.user;
+
+        const orders = await OrderSchema.find({user:user.id});
+
+        return res.status(200).send(orders);
+
+    }catch (error) {
+        console.log(error);
+        return res.status(400).send("Something went wrong. Please try again later");
+    }
+};
+
+
+
+module.exports = { UserRegister, UserLogin, AddToCart, RemoveFromCart, getAllCartItems,PlaceOrder,getAllOrders };
