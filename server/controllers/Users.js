@@ -76,6 +76,7 @@ const UserLogin = async (req, res) => {
     }
 };
 
+// Cart
 const AddToCart = async (req, res) => {
     try {
 
@@ -162,6 +163,7 @@ const getAllCartItems = async (req, res) => {
     }
 };
 
+// Orders
 const PlaceOrder = async (req, res) => {
     try {
 
@@ -206,6 +208,7 @@ const getAllOrders = async(req,res)=>{
     }
 };
 
+// Favourites
 const AddToFavorites = async(req,res)=>{
     try{
 
@@ -247,4 +250,22 @@ const RemoveFromFavorites = async(req,res)=>{
     }
 };
 
-module.exports = { UserRegister, UserLogin, AddToCart, RemoveFromCart, getAllCartItems,PlaceOrder,getAllOrders ,AddToFavorites,RemoveFromFavorites};
+const getUserFavourites = async(req,res)=>{
+    try{
+     
+        const userId = req.user.id;
+        const user = await UserSchema.findById(userId).populate("favourites").exec();
+
+        if(!user){
+            return res.status(400).send("User not found");
+        }
+
+        return res.status(200).send(user.favourites);
+        
+    }catch (error) {
+        console.log(error);
+        return res.status(400).send("Something went wrong. Please try again later");
+    }
+}
+
+module.exports = { UserRegister, UserLogin, AddToCart, RemoveFromCart, getAllCartItems,PlaceOrder,getAllOrders ,AddToFavorites,RemoveFromFavorites,getUserFavourites};
