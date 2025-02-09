@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose=require('mongoose');
 
 const OrderSchema = new mongoose.Schema({
 
@@ -33,4 +33,4 @@ const OrderSchema = new mongoose.Schema({
 
 },{timestamps:true})
 
-export default mongoose.model("Shopping-Order",OrderSchema,"Shopping-Order");
+module.exports=mongoose.model("Shopping-Order",OrderSchema,"Shopping-Order");

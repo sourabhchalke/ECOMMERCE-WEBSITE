@@ -1,28 +1,19 @@
 const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
-const verifyToken = async(req,res,next)=>{
-    try{
-
-        if(!req.headers.authorization){
-            return res.status(400).send("You are not Authenticated");
-        }
-
-        const token = req.headers.authorization.split(" ")[1];
-
-        if(!token){
-            return res.status(400).send("You are not Authenticated");
-        }
-
-        const decode = jwt.verify(token,process.env.JWT);
-
-        req.user=decode;
-
-        return next();
-
-    }catch(error){
-        console.log(error);
-        return res.status(400).send("Something went wrong");
+const verifyToken = (req, res, next) => {
+    const token = req.headers.authorization;
+    if (!token) {
+        return res.status(403).json({ error: "No token provided" });
     }
-}
 
-module.exports=verifyToken;
+    jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
+        if (err) {
+            return res.status(401).json({ error: "Unauthorized" });
+        }
+        req.user = decoded;
+        next();
+    });
+};
+
+module.exports = { verifyToken }; 

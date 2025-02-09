@@ -34,7 +34,7 @@ const UserRegister = async (req, res) => {
 
         console.log("Data Inserted Successfull");
 
-        return res.status(201).json({ message: "User Registered Successfully", token });
+        return res.status(200).json({ message: "User registered successfully" });
 
     } catch (error) {
         console.error(error);
@@ -98,7 +98,7 @@ const AddToCart = async (req, res) => {
 
         await user.save();
 
-        return res.status(200).send("Product added to cart successfully", user);
+        return res.status(200).json({ message: "Product added to cart" });
 
     } catch (error) {
         console.log(error);
@@ -135,7 +135,7 @@ const RemoveFromCart = async (req, res) => {
 
             await user.save();
 
-            return res.status(200).send("Product quantity updated in cart");
+            return res.status(200).json({ message: "Product quantity added" });
         }
 
     } catch (error) {
@@ -155,7 +155,7 @@ const getAllCartItems = async (req, res) => {
 
         const cartItems = user.cart;
 
-        return res.status(200).send(cartItems);
+        return res.status(200).json(cartItems);
 
     } catch (error) {
         console.log(error);
@@ -184,7 +184,7 @@ const PlaceOrder = async (req, res) => {
          user.cart=[];
          await user.save();
 
-         return res.status(200).send("Order Placed Successfully");
+         return res.status(200).json({ message: "Order placed successfully" });
 
 
     } catch (error) {
@@ -200,7 +200,7 @@ const getAllOrders = async(req,res)=>{
 
         const orders = await OrderSchema.find({user:user.id});
 
-        return res.status(200).send(orders);
+        return res.status(200).json(orders);
 
     }catch (error) {
         console.log(error);
@@ -222,7 +222,7 @@ const AddToFavorites = async(req,res)=>{
             await user.save();
         }
 
-        return res.status(200).send("Product added to favorites successfully",user);
+        return res.status(200).json({ message: "Product added to favorite successfully" });
 
     }catch (error) {
         console.log(error);
@@ -242,7 +242,7 @@ const RemoveFromFavorites = async(req,res)=>{
 
         await user.save();
 
-        return res.status(200).send("Product remove from favorites successfully",user);
+        return res.status(200).json({ message: "Product remove from favorite successfully" });
 
     }catch (error) {
         console.log(error);
@@ -260,7 +260,7 @@ const getUserFavourites = async(req,res)=>{
             return res.status(400).send("User not found");
         }
 
-        return res.status(200).send(user.favourites);
+        return res.status(200).json(user.favourites);
         
     }catch (error) {
         console.log(error);
@@ -268,4 +268,16 @@ const getUserFavourites = async(req,res)=>{
     }
 }
 
-module.exports = { UserRegister, UserLogin, AddToCart, RemoveFromCart, getAllCartItems,PlaceOrder,getAllOrders ,AddToFavorites,RemoveFromFavorites,getUserFavourites};
+module.exports = {
+    UserRegister,
+    UserLogin,
+    AddToCart,
+    RemoveFromCart,
+    getAllCartItems,
+    PlaceOrder,
+    getAllOrders,
+    AddToFavorites,
+    RemoveFromFavorites,
+    getUserFavourites,
+  };
+  
