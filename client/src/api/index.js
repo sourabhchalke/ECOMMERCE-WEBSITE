@@ -25,6 +25,18 @@ const deleteFromCart = async(token,data)=> await API.patch('/user/cart',data,{
     headers:{Authorization:`Bearer ${token}`},
 });
 
+// Favorite
+const getFavorite = async(token)=> await API.get('/user/favorite',{
+    headers:{Authorization:`Bearer ${token}`},
+});
+
+const addToFavorite = async(token,data)=> await API.post('/user/favorite',data,{
+    headers:{Authorization:`Bearer ${token}`},
+});
+
+const deleteFromFavorite = async(token,data)=> await API.patch('/user/favorite',data,{
+    headers:{Authorization:`Bearer ${token}`},
+});
 
 module.exports = {
     UserSignUp,
@@ -34,4 +46,7 @@ module.exports = {
     getCart,
     addToCart,
     deleteFromCart,
+    getFavorite,
+    addToFavorite,
+    deleteFromFavorite,
 };
