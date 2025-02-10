@@ -38,6 +38,15 @@ const deleteFromFavorite = async(token,data)=> await API.patch('/user/favorite',
     headers:{Authorization:`Bearer ${token}`},
 });
 
+// Orders
+const placeOrder = async(token,data)=> await API.post('/user/order/',data,{
+    headers:{Authorization:`Bearer ${token}`},
+});
+
+const getOrder = async(token)=> await API.get('/user/order/',{
+    headers:{Authorization:`Bearer ${token}`},
+});
+
 module.exports = {
     UserSignUp,
     UserSignIn,
@@ -49,4 +58,6 @@ module.exports = {
     getFavorite,
     addToFavorite,
     deleteFromFavorite,
+    placeOrder,
+    getOrder
 };
