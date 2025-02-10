@@ -10,15 +10,28 @@ const UserSignIn = async(data)=> await API.post('/user/signin',data);
 // Product
 const getAllProducts = async(filter)=> await API.get(`/products?${filter}`);
 
-const getAProductDetails = async(id)=> await API.get(`/products?${id}`);
+const getProductDetails = async(id)=> await API.get(`/products?${id}`);
 
+// Cart
+const getCart = async(token)=> await API.get('/user/cart',{
+    headers:{Authorization:`Bearer ${token}`},
+});
 
+const addToCart = async(token,data)=> await API.post('/user/cart',data,{
+    headers:{Authorization:`Bearer ${token}`},
+});
+
+const deleteFromCart = async(token,data)=> await API.patch('/user/cart',data,{
+    headers:{Authorization:`Bearer ${token}`},
+});
 
 
 module.exports = {
     UserSignUp,
     UserSignIn,
     getAllProducts,
-    getAProductDetails,
-    
+    getProductDetails,
+    getCart,
+    addToCart,
+    deleteFromCart,
 };
