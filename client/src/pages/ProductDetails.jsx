@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import {Rating} from '@mui/material';
-import {FavoriteBorder, FavoriteRounded} from '@mui/icons-material';
+import {FavoriteBorder} from '@mui/icons-material';
 import Button from '../components/Button';
 
 const Container=styled.div`
