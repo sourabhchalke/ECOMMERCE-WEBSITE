@@ -1,26 +1,23 @@
-const {createSlice}=require('@reduxjs/toolkit');
+import { createSlice } from "@reduxjs/toolkit";
 
-const initialState={
-    open:false,
-    message:"",
-    severity:"success"
+const initialState = {
+  message: "",
+  open: false,
 };
 
 const snackbarSlice = createSlice({
-    name:"snackbar",
-    initialState,
-    reducers:{
-        openSnackbar:(state,action)=>{
-            state.open=true;
-            state.message=action.payload.message;
-            state.severity=action.payload.severity;
-        },
-        closeSnackbar:(state)=>{
-            state.open=false;
-        },
-        
-    }
+  name: "snackbar",
+  initialState,
+  reducers: {
+    showSnackbar: (state, action) => {
+      state.message = action.payload;
+      state.open = true;
+    },
+    hideSnackbar: (state) => {
+      state.open = false;
+    },
+  },
 });
 
-module.exports = { snackbarReducer: snackbarSlice.reducer, snackbarActions: snackbarSlice.actions };
-
+export const { showSnackbar, hideSnackbar } = snackbarSlice.actions;
+export default snackbarSlice.reducer; 

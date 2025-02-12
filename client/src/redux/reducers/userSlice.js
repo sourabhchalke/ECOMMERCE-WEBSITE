@@ -1,26 +1,26 @@
-const {createSlice}=require('@reduxjs/toolkit');
+import { createSlice } from '@reduxjs/toolkit'; 
 
-const initialState={
-    currentUser:null,
+const initialState = {
+    currentUser: null,
 };
 
 const userSlice = createSlice({
-    name:"user",
+    name: "user",
     initialState,
-    reducers:{
-        updateUser:(state,action)=>{
-            state.currentUser=action.payload.user;
+    reducers: {
+        updateUser: (state, action) => {
+            state.currentUser = action.payload.user;
         },
-        loginSuccess:(state,action)=>{
-            state.currentUser=action.payload.user;
-            localStorage.setItem("shop-cart-token",action.payload.token);
+        loginSuccess: (state, action) => {
+            state.currentUser = action.payload.user;
+            localStorage.setItem("shop-cart-token", action.payload.token);
         },
-        logout:(state,action)=>{
-            state.currentUser=null;
+        logout: (state) => {
+            state.currentUser = null;
             localStorage.removeItem("shop-cart-token");
         }
     }
 });
 
-module.exports = { userReducer: userSlice.reducer, userActions: userSlice.actions };
-
+export default userSlice.reducer;
+export const userActions = userSlice.actions;

@@ -1,18 +1,9 @@
-const { configureStore, combineReducers } = require('@reduxjs/toolkit');
-const {
-    persistStore,
-    persistReducer,
-    FLUSH,
-    REHYDRATE,
-    PAUSE,
-    PERSIST,
-    PURGE,
-    REGISTER,
-} = require('redux-persist');
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
+import { persistStore, persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 
-const storage = require('redux-persist/lib/storage');
-const userReducer = require('./reducers/userSlice');
-const snackbarReducer = require('./reducers/snackbarSlice');
+import storage from 'redux-persist/lib/storage';
+import userReducer from './reducers/userSlice';
+import snackbarReducer from './reducers/snackbarSlice';
 
 const persistConfig = {
     key: "root",
@@ -39,4 +30,4 @@ const store = configureStore({
 
 const persistor = persistStore(store);
 
-module.exports = { store, persistor };
+export  { store, persistor };
