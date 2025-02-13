@@ -1,6 +1,7 @@
-const mongoose=require('mongoose');
-const ProductSchema=require('../models/Products');
-const Products = require('../models/Products');
+import ProductSchema from '../models/Products.js';
+import Product from '../models/Products.js';  
+
+
 
 const addProduct = async(req,res)=>{
 
@@ -73,7 +74,7 @@ const getProduct=async(req,res)=>{
             ]
         }
 
-        const products = await ProductSchema.find(filter);
+        const products = await find(filter);
         console.log(filter);
         return res.status(200).send(products);
 
@@ -88,11 +89,11 @@ const getProductById = async(req,res)=>{
     try{
         const {id}=req.params;
 
-        if(!mongoose.isValidObjectId(id)){
+        if(!isValidObjectId(id)){
             return res.status(400).send("Invalid product ID");
         }
 
-        const product = await ProductSchema.findById(id);
+        const product = await findById(id);
 
         if(!product){
             return res.status(400).send("Product not found");
@@ -106,4 +107,4 @@ const getProductById = async(req,res)=>{
     }
 }
 
-module.exports={addProduct,getProduct,getProductById};
+export default{addProduct,getProduct,getProductById};

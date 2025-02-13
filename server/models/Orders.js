@@ -1,36 +1,35 @@
-const mongoose=require('mongoose');
+import { Schema, Types, model } from 'mongoose';
 
-const OrderSchema = new mongoose.Schema({
-
+const OrderSchema = new Schema(
+  {
     products: {
-        type: [
-          {
-            product: { type: mongoose.Schema.Types.ObjectId, ref: "Products" },
-            quantity: { type: Number, default: 1 },
-          },
-        ],
-        required: true,
-      },
-      user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required: true,
-      },
-      
-    total_amount:{
-        type:mongoose.Types.Decimal128,
-        required:true,
+      type: [
+        {
+          product: { type: Schema.Types.ObjectId, ref: "Product" }, 
+          quantity: { type: Number, default: 1 },
+        },
+      ],
+      required: true,
     },
-    address:{
-        type:String,
-        default:"",
-        required:true,
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
-    status:{
-        type:String,
-        default:"Payment Done",
+    total_amount: {
+      type: Types.Decimal128,
+      required: true,
     },
+    address: {
+      type: String,
+      default: "", 
+    },
+    status: {
+      type: String,
+      default: "Payment Done",
+    },
+  },
+  { timestamps: true }
+);
 
-},{timestamps:true})
-
-module.exports=mongoose.model("Shopping-Order",OrderSchema,"Shopping-Order");
+export default model("Order", OrderSchema);

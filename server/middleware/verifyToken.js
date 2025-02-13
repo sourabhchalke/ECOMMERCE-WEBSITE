@@ -1,5 +1,8 @@
-const jwt = require('jsonwebtoken');
-require('dotenv').config();
+import pkg from 'jsonwebtoken';
+const { verify } = pkg;
+import dotenv from 'dotenv';
+dotenv.config();
+
 
 const verifyToken = (req, res, next) => {
     let token = req.headers.authorization;
@@ -22,7 +25,7 @@ const verifyToken = (req, res, next) => {
         return res.status(500).json({ error: "Internal Server Error" });
     }
 
-    jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
+    verify(token, process.env.SECRET_KEY, (err, decoded) => {
         if (err) {
             console.error("Token Verification Error:", err.message);
             return res.status(401).json({ error: "Unauthorized. Invalid or expired token." });
@@ -34,4 +37,4 @@ const verifyToken = (req, res, next) => {
     });
 };
 
-module.exports = { verifyToken };
+export default  verifyToken ;

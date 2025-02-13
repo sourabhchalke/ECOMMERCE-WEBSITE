@@ -1,44 +1,43 @@
-const mongoose = require('mongoose');
+import { Schema, model } from 'mongoose';
 
-const UserSchema= new mongoose.Schema({
-    name:{
-        type:String,
-        required:true,
+const UserSchema = new Schema(
+  {
+    name: {
+      type: String,
+      required: true,
     },
-    email:{
-        type:String,
-        required:true,
-        unique:true,
+    email: {
+      type: String,
+      required: true,
+      unique: true,
     },
-    password:{
-        type:String,
-        required:true,
+    password: {
+      type: String,
+      required: true,
     },
-    img:{
-        type:String,
-        default:null,
+    img: {
+      type: String,
+      default: null,
     },
-
     cart: {
-        type: [
-          {
-            product: { type: mongoose.Schema.Types.ObjectId, ref: "Products" },
-            quantity: { type: Number, default: 1 },
-          },
-        ],
-        default: [],
-      },
-      favourites: {
-        type: [mongoose.Schema.Types.ObjectId],
-        ref: "Products",
-        default: [],
-      },
-      orders: {
-        type: [mongoose.Schema.Types.ObjectId],
-        ref: "Shopping-Orders",
-        default: [],
-      },
+      type: [
+        {
+          product: { type: Schema.Types.ObjectId, ref: "Products" },
+          quantity: { type: Number, default: 1 },
+        },
+      ],
+      default: [],
+    },
+    favourites: {
+      type: [{ type: Schema.Types.ObjectId, ref: "Products" }], 
+      default: [],
+    },
+    orders: {
+      type: [{ type: Schema.Types.ObjectId, ref: "Shopping-Orders" }], 
+      default: [],
+    },
+  },
+  { timestamps: true }
+);
 
-},{timestamps:true});
-
-module.exports = mongoose.model("User",UserSchema,"User");
+export default model("User", UserSchema, "User"); 

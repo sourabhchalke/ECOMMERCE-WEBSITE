@@ -1,39 +1,35 @@
-const express = require('express');
+import express from "express";
+import {
+  UserRegister,
+  UserLogin,
+  AddToCart,
+  RemoveFromCart,
+  getAllCartItems,
+  PlaceOrder,
+  getAllOrders,
+  AddToFavorites,
+  RemoveFromFavorites,
+  getUserFavorites,
+} from "../controllers/Users.js";
+import  verifyToken  from "../middleware/verifyToken.js";
+
 const router = express.Router();
-const controllers = require('../controllers/Users');
 
-console.log("Imported controllers:", controllers); //  Debugging line
+router.post("/signup", UserRegister);
+router.post("/signin", UserLogin);
 
-const { 
-  UserRegister, 
-  UserLogin, 
-  AddToCart, 
-  RemoveFromCart, 
-  getAllCartItems, 
-  PlaceOrder, 
-  getAllOrders, 
-  AddToFavorites, 
-  RemoveFromFavorites, 
-  getUserFavourites 
-} = controllers;
+//cart
+router.get("/cart", verifyToken, getAllCartItems);
+router.post("/cart", verifyToken, AddToCart);
+router.patch("/cart", verifyToken, RemoveFromCart);
 
-const { verifyToken } = require('../middleware/verifyToken');
+//order
+router.get("/order", verifyToken, getAllOrders);
+router.post("/order", verifyToken, PlaceOrder);
 
-router.post('/signup', UserRegister);
-router.post('/signin', UserLogin);
+//favourites
+router.get("/favorite", verifyToken, getUserFavorites);
+router.post("/favorite", verifyToken, AddToFavorites);
+router.patch("/favorite", verifyToken, RemoveFromFavorites);
 
-// Cart
-router.get('/cart', verifyToken, getAllCartItems);
-router.post('/cart', verifyToken, AddToCart);
-router.patch('/cart', verifyToken, RemoveFromCart);
-
-// Order
-router.get('/order', verifyToken, getAllOrders);
-router.post('/order', verifyToken, PlaceOrder);
-
-// Favorites
-router.get('/favorite', verifyToken, getUserFavourites);
-router.post('/favorite', verifyToken, AddToFavorites);
-router.patch('/favorite', verifyToken, RemoveFromFavorites);
-
-module.exports = router;
+export default router;

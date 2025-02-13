@@ -1,286 +1,210 @@
-const UserSchema = require('../models/Users');
-const OrderSchema = require('../models/Orders');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-require('dotenv').config();
+import User from '../models/Users.js';
+import Order from '../models/Orders.js';
+import { hash, compare } from 'bcrypt';
+import pkg from 'jsonwebtoken';
 
-const UserRegister = async (req, res) => {
+const { sign } = pkg;
+import dotenv from 'dotenv';
+dotenv.config(); 
+
+export const UserRegister = async (req, res) => {
     try {
         const { name, email, password, img } = req.body;
 
-        console.log(req.body);
-
-        const User = await UserSchema.findOne({ email });
-
-        if (User) {
+        const existingUser = await User.findOne({ email }); 
+        if (existingUser) {
             return res.status(400).json({ error: "User Already Exists" });
         }
 
-        const hashPassword = await bcrypt.hash(password, 10);
+        const hashPassword = await hash(password, 10);
+        const newUser = new User({ name, email, password: hashPassword, img });
 
-        const NewUser = new UserSchema({
-            name,
-            email,
-            password: hashPassword,
-            img
-        });
+        const createUser = await newUser.save();
 
-        const createUser = await NewUser.save();
-
-        // Ensure SECRET_KEY is defined
         if (!process.env.SECRET_KEY) {
-            console.error("SECRET_KEY is not defined in environment variables");
             return res.status(500).json({ error: "Server error, try again later" });
         }
 
-        const token = jwt.sign({ id: createUser._id }, process.env.SECRET_KEY, { expiresIn: "1h" });
-
-        console.log("User Registered Successfully, Token:", token);
+        const token = sign({ id: createUser._id }, process.env.SECRET_KEY, { expiresIn: "1h" });
 
         return res.status(200).json({ message: "User registered successfully", token });
 
     } catch (error) {
-        console.error(error);
         return res.status(500).json({ error: "Internal Server Error" });
     }
 };
 
-const UserLogin = async (req, res) => {
+export const UserLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
-
-        console.log(req.body);
-
-        const ExistsUser = await UserSchema.findOne({ email });
+        const ExistsUser = await User.findOne({ email });
 
         if (!ExistsUser) {
             return res.status(400).json({ error: "User Not Found" });
         }
 
-        const isPasswordMatch = await bcrypt.compare(password, ExistsUser.password);
-
+        const isPasswordMatch = await compare(password, ExistsUser.password);
         if (!isPasswordMatch) {
             return res.status(404).json({ error: "Incorrect Password" });
         }
 
         if (!process.env.SECRET_KEY) {
-            console.error("SECRET_KEY is not defined in environment variables");
             return res.status(500).json({ error: "Server error, try again later" });
         }
 
-        const token = jwt.sign({ id: ExistsUser._id }, process.env.SECRET_KEY, { expiresIn: "1h" });
-
-        console.log("Login Successful, Token:", token);
+        const token = sign({ id: ExistsUser._id }, process.env.SECRET_KEY, { expiresIn: "1h" });
 
         return res.status(200).json({ message: "User Login Successfully", token });
 
     } catch (error) {
-        console.error(error);
         return res.status(500).json({ error: "Internal Server Error" });
     }
 };
 
 // Cart
-const AddToCart = async (req, res) => {
+export const AddToCart = async (req, res) => {
     try {
-
         const { productId, quantity } = req.body;
-        console.log(productId, quantity);
+        const user = await User.findById(req.user.id);
 
-        const userJWT = req.user;
-        const user = await UserSchema.findById(userJWT.id);
-
-        const existingCartItemIndex = user.cart.findIndex((item) => item.product.equals(productId));
-
+        const existingCartItemIndex = user.cart.findIndex(item => item.product.equals(productId));
         if (existingCartItemIndex !== -1) {
-            // Product is already in the cart, update the quantity
             user.cart[existingCartItemIndex].quantity += quantity;
         } else {
-            // Product is not in the cart, add it
             user.cart.push({ product: productId, quantity });
         }
 
         await user.save();
-
         return res.status(200).json({ message: "Product added to cart" });
 
     } catch (error) {
-        console.log(error);
         return res.status(400).send("Something went wrong. Please try again later");
     }
 };
 
-const RemoveFromCart = async (req, res) => {
+export const RemoveFromCart = async (req, res) => {
     try {
-
         const { productId, quantity } = req.body;
-        console.log(productId, quantity);
-
-        const userJWT = req.user;
-        const user = await UserSchema.findById(userJWT.id);
+        const user = await User.findById(req.user.id);
 
         if (!user) {
             return res.status(400).send("User Not Found");
         }
 
-        const productIndex = user.cart.findIndex((item) => item.product.equals(productId));
+        const productIndex = user.cart.findIndex(item => item.product.equals(productId));
 
         if (productIndex !== -1) {
             if (quantity && quantity > 0) {
                 user.cart[productIndex].quantity -= quantity;
-
                 if (user.cart[productIndex].quantity <= 0) {
                     user.cart.splice(productIndex, 1);
                 }
-
             } else {
                 user.cart.splice(productIndex, 1);
             }
-
             await user.save();
-
-            return res.status(200).json({ message: "Product quantity added" });
+            return res.status(200).json({ message: "Product removed from cart" });
         }
 
     } catch (error) {
-        console.log(error);
         return res.status(400).send("Something went wrong. Please try again later");
     }
 };
 
-const getAllCartItems = async (req, res) => {
+export const getAllCartItems = async (req, res) => {
     try {
-
-        const userJWT = req.user;
-        const user = await UserSchema.findById(userJWT.id).populate({
-            path: "cart.product",
-            model: "Products",
-        });
-
-        const cartItems = user.cart;
-
-        return res.status(200).json(cartItems);
-
+        const user = await User.findById(req.user.id).populate("cart.product");
+        return res.status(200).json(user.cart);
     } catch (error) {
-        console.log(error);
         return res.status(400).send("Something went wrong. Please try again later");
     }
 };
 
 // Orders
-const PlaceOrder = async (req, res) => {
+export const PlaceOrder = async (req, res) => {
     try {
+        const { products, address, totalAmount } = req.body;
+        const user = await User.findById(req.user.id);
 
-        const {products,address,totalAmount}=req.body;
-
-        const userJWT = req.user;
-         const user=await UserSchema.findById(userJWT.id);
-
-         const order = new OrderSchema({
+        const order = new Order({
             products,
-            user:user._id,
-            total_amount:totalAmount,
+            user: user._id,
+            total_amount: totalAmount,
             address,
-         });
+        });
 
-         await order.save();
+        await order.save();
+        user.cart = [];
+        await user.save();
 
-         user.cart=[];
-         await user.save();
-
-         return res.status(200).json({ message: "Order placed successfully" });
-
+        return res.status(200).json({ message: "Order placed successfully" });
 
     } catch (error) {
-        console.log(error);
         return res.status(400).send("Something went wrong. Please try again later");
     }
 };
 
-const getAllOrders = async(req,res)=>{
-    try{
-
-        const user = req.user;
-
-        const orders = await OrderSchema.find({user:user.id});
-
+export const getAllOrders = async (req, res) => {
+    try {
+        const orders = await Order.find({ user: req.user.id });
         return res.status(200).json(orders);
-
-    }catch (error) {
-        console.log(error);
+    } catch (error) {
         return res.status(400).send("Something went wrong. Please try again later");
     }
 };
 
-// Favourites
-const AddToFavorites = async(req,res)=>{
-    try{
+// Favorites
+export const AddToFavorites = async (req, res) => {
+    try {
+        const { productId } = req.body;
+        const user = await User.findById(req.user.id);
 
-        const {productId}=req.body;
-        const userJWT = req.user;
-
-        const user = await UserSchema.findById(userJWT.id);
-
-        if(!user.favourites.includes(productId)){
+        if (!user.favourites.includes(productId)) {
             user.favourites.push(productId);
             await user.save();
         }
 
-        return res.status(200).json({ message: "Product added to favorite successfully" });
+        return res.status(200).json({ message: "Product added to favorites successfully" });
 
-    }catch (error) {
-        console.log(error);
+    } catch (error) {
         return res.status(400).send("Something went wrong. Please try again later");
     }
 };
 
-const RemoveFromFavorites = async(req,res)=>{
-    try{
+export const RemoveFromFavorites = async (req, res) => {
+    try {
+        const { productId } = req.body;
+        const user = await User.findById(req.user.id);
 
-        const {productId}=req.body;
-        const userJWT = req.user;
-
-        const user = await UserSchema.findById(userJWT.id);
-        
-        user.favourites = user.favourites.filter((fav)=> !fav.equals(productId));
-
+        user.favourites = user.favourites.filter(fav => !fav.equals(productId));
         await user.save();
 
-        return res.status(200).json({ message: "Product remove from favorite successfully" });
+        return res.status(200).json({ message: "Product removed from favorites successfully" });
 
-    }catch (error) {
-        console.log(error);
+    } catch (error) {
         return res.status(400).send("Something went wrong. Please try again later");
     }
 };
 
-const getUserFavourites = async(req,res)=>{
-    try{
-     
-        const userId = req.user.id;
-        const user = await UserSchema.findById(userId).populate("favourites").exec();
-
-        if(!user){
-            return res.status(400).send("User not found");
-        }
-
+export const getUserFavorites = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id).populate("favourites");
         return res.status(200).json(user.favourites);
-        
-    }catch (error) {
-        console.log(error);
+    } catch (error) {
         return res.status(400).send("Something went wrong. Please try again later");
     }
-}
-
-module.exports = {
-  UserRegister,
-  UserLogin,
-  AddToCart,
-  RemoveFromCart,
-  getAllCartItems,
-  PlaceOrder,
-  getAllOrders,
-  AddToFavorites,
-  RemoveFromFavorites,
-  getUserFavourites,
 };
+
+// export default  {
+//     UserRegister,
+//     UserLogin,
+//     AddToCart,
+//     RemoveFromCart,
+//     getAllCartItems,
+//     PlaceOrder,
+//     getAllOrders,
+//     AddToFavorites,
+//     RemoveFromFavorites,
+//     getUserFavorites,
+
+// };

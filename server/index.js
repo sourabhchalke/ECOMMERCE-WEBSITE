@@ -1,30 +1,32 @@
-const express=require('express');
+import express, { json, urlencoded } from 'express';
 const app=express();
-const mongoose=require('mongoose');
-require('dotenv').config();
-const cors=require('cors');
-const UserRouter = require('./routes/Users.js');
-const Product = require('./routes/Products.js');
+import { connect } from 'mongoose';
+import dotenv from "dotenv";
+dotenv.config();
+
+import cors from 'cors';
+import UserRouter from './routes/Users.js';
+import Product from './routes/Products.js';
 
 // Connecting to MongoDB
-mongoose.connect(process.env.MONGO_URI)
+connect(process.env.MONGO_URI)
 .then(() => console.log("Database Connected"))
 .catch(err => console.error("Something went wrong:", err));
 
 // Middleware
 app.use(cors());
-app.use(express.json({limit:"50mb"}));
-app.use(express.urlencoded({extended:true}));
+app.use(json({limit:"50mb"}));
+app.use(urlencoded({extended:true}));
 
 // User
-app.use('/',UserRouter);
+app.use('/api/user',UserRouter);
 
 // Product 
-app.use('/product',Product);
+app.use('/api/products',Product);
 
-// app.get('/',(req,res)=>{
-//     res.send("Server Running");
-// })
+app.get('/api',(req,res)=>{
+    res.send("Server Running");
+})
 
 app.listen(8080,()=>{
     console.log("Server Successfully Running on Port:8080");
