@@ -54,7 +54,7 @@ export const UserLogin = async (req, res) => {
 
         const token = sign({ id: ExistsUser._id }, process.env.SECRET_KEY, { expiresIn: "1h" });
 
-        return res.status(200).json({ message: "User Login Successfully", token });
+        return res.status(200).json({ message: "User Login Successfully", token ,user:ExistsUser});
 
     } catch (error) {
         return res.status(500).json({ error: "Internal Server Error" });
