@@ -51,9 +51,10 @@ function Home() {
         <Title>Shop By Categories</Title>
 
         <CardWrapper>
-          {category.map((category) => {
-            return <ProductCategoryCard category={category} />;
-          })}
+          {Array.isArray(category) &&
+            category.map((item) => (
+              <ProductCategoryCard category={item} key={item.id} />
+            ))}
         </CardWrapper>
       </Section>
 

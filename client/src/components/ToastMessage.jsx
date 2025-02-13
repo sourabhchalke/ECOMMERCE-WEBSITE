@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import Alert from "@mui/material/Alert";
 import { useDispatch } from "react-redux";
 import Snackbar from "@mui/material/Snackbar";
-import { closeSnackbar } from "../redux/reducers/snackbarSlice";
+import { hideSnackbar } from "../redux/reducers/snackbarSlice";
 
 const ToastMessage = ({ message, severity, open }) => {
   const dispatch = useDispatch();
@@ -10,10 +10,10 @@ const ToastMessage = ({ message, severity, open }) => {
     <Snackbar
       open={open}
       autoHideDuration={6000}
-      onClose={() => dispatch(closeSnackbar())}
+      onClose={() => dispatch(hideSnackbar())}
     >
       <Alert
-        onClose={() => dispatch(closeSnackbar())}
+        onClose={() => dispatch(hideSnackbar())}
         severity={severity}
         sx={{ width: "100%" }}
       >

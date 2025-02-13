@@ -15,6 +15,9 @@ import { useState } from 'react';
 import Cart from './pages/Cart';
 import ProductDetails from './pages/ProductDetails';
 
+import {useSelector,useDispatch} from 'react-redux';
+import ToastMessage from './components/ToastMessage';
+
 const Container = styled.div`
   width:100%;
   height:100vh;
@@ -28,12 +31,15 @@ const Container = styled.div`
 `;
 
 function App() {
+
+  const {currentUser} = useSelector((state)=>state.user);
+  const {open,message,severity}= useSelector((state)=>state.user);
   const [openAuth,setOpenAuth]=useState(false);
 
   return (
     <ThemeProvider theme={lightTheme} className='App'>
       <BrowserRouter>
-        <Navbar setOpenAuth={setOpenAuth}/>
+        <Navbar setOpenAuth={setOpenAuth} currentUser={currentUser}/>
         <Container>
           <Routes>
             <Route path='/' exact element={<Home />} />
@@ -45,6 +51,9 @@ function App() {
 
           {openAuth && <Authentication openAuth={openAuth} setOpenAuth={setOpenAuth}/>}
 
+            {open &&(
+              <ToastMessage open={open} message={message} severity={severity} />
+            )}
         </Container>
       </BrowserRouter>
     </ThemeProvider>
