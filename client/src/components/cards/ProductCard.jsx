@@ -5,6 +5,7 @@ import {
   AddShoppingCartOutlined,
   FavoriteBorder,
 } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 
 const Card = styled.div`
   width: 280px;
@@ -119,6 +120,7 @@ const Percent = styled.div`
 `;
 
 function ProductCard({product}) {
+  const navigate = useNavigate();
   return (
     <Card>
       <Top>
@@ -139,7 +141,7 @@ function ProductCard({product}) {
         </Rate>
       </Top>
 
-      <Details>
+      <Details onClick={()=> navigate(`/shop/${product._id}`)}>
         <Title>{product?.title}</Title>
         <Des>{product?.name}</Des>
         <Price>
