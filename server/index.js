@@ -22,7 +22,7 @@ app.use(urlencoded({extended:true}));
 app.use('/api/user',UserRouter);
 
 // Product 
-app.use('/api/products',Product);
+app.use('/api/',Product);
 
 app.get('/api',(req,res)=>{
     res.send("Server Running");

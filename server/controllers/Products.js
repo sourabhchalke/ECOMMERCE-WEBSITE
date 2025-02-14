@@ -1,23 +1,21 @@
-import ProductSchema from '../models/Products.js';
-import Product from '../models/Products.js';  
 
+import Product from '../models/Products.js';
 
+export const addProduct = async (req, res) => {
 
-const addProduct = async(req,res)=>{
-
-    try{
+    try {
         const productsData = req.body;
         console.log(productsData);
 
-        if(!Array.isArray(productsData)) {
+        if (!Array.isArray(productsData)) {
             console.log("Invalid/Misinformation Please Enter Correct Details");
-        } 
-        
-        const createdProducts=[];
-        const {title,name,desc,img,price,size,category}=productsData;
-        console.log(title,name,desc);
+        }
 
-        const product=new ProductSchema({
+        const createdProducts = [];
+        const { title, name, desc, img, price, size, category } = productsData;
+        console.log(title, name, desc);
+
+        const product =  new Product({
             title,
             name,
             desc,
@@ -31,80 +29,79 @@ const addProduct = async(req,res)=>{
 
         return res.status(200).send("Product added successfully");
 
-    }catch(error){
+    } catch (error) {
         console.log(error);
-        return res.status(400).send("Something went wrong",error);
+        return res.status(400).send("Something went wrong", error);
     }
 };
 
-const getProduct=async(req,res)=>{
+export const getProduct = async (req, res) => {
 
-    try{
+    try {
 
         console.log(req.query);
-        let {categories,minPrice,maxPrice,sizes,search}=req.query;
+        let { categories, minPrice, maxPrice, sizes, search } = req.query;
         sizes = sizes?.split(',');
         categories = categories?.split(',');
 
         const filter = {};
 
-        if(categories && Array.isArray(categories)){
-            filter.category = {$in : categories};
+        if (categories && Array.isArray(categories)) {
+            filter.category = { $in: categories };
         }
 
-        if(minPrice || maxPrice){
-            filter["price.org"]={};
+        if (minPrice || maxPrice) {
+            filter["price.org"] = {};
 
-            if(minPrice){
-                filter["price.org"]["$gte"]= parseFloat(minPrice);
+            if (minPrice) {
+                filter["price.org"]["$gte"] = parseFloat(minPrice);
             }
-            if(maxPrice){
-                filter["price.org"]["$lte"]= parseFloat(maxPrice);
+            if (maxPrice) {
+                filter["price.org"]["$lte"] = parseFloat(maxPrice);
             }
         }
 
-        if(sizes && Array.isArray(sizes)){
-            filter.sizes = {$in : sizes};
+        if (sizes && Array.isArray(sizes)) {
+            filter.sizes = { $in: sizes };
         }
 
-        if(search){
+        if (search) {
             filter.$or = [
-                {title:{$regex:new RegExp(search,"i")}},
-                {desc:{$regex:new RegExp(search,"i")}},
+                { title: { $regex: new RegExp(search, "i") } },
+                { desc: { $regex: new RegExp(search, "i") } },
             ]
         }
 
-        const products = await find(filter);
+        const products = await Product.find(filter);
         console.log(filter);
         return res.status(200).send(products);
 
-    }catch(error){
+    } catch (error) {
         console.log(error);
         return res.status(400).send("Something went wrong! Please try again");
     }
 
 };
 
-const getProductById = async(req,res)=>{
-    try{
-        const {id}=req.params;
+export const getProductById = async (req, res) => {
+    try {
+        const { id } = req.params;
 
-        if(!isValidObjectId(id)){
+        if (!isValidObjectId(id)) {
             return res.status(400).send("Invalid product ID");
         }
 
         const product = await findById(id);
 
-        if(!product){
+        if (!product) {
             return res.status(400).send("Product not found");
         }
 
         return res.status(200).json(product);
 
-    }catch(error){
+    } catch (error) {
         console.log(error);
         return res.status(400).send("Something went wrong");
     }
 }
 
-export default{addProduct,getProduct,getProductById};
