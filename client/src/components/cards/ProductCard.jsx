@@ -118,11 +118,11 @@ const Percent = styled.div`
   color: ${({ theme }) => theme.green};
 `;
 
-function ProductCard() {
+function ProductCard({product}) {
   return (
     <Card>
       <Top>
-        <Image src="https://assets0.mirraw.com/images/11782208/3283579_long_webp.webp?1696934926" />
+        <Image src={product?.img} />
         <Menu>
           <MenuItem>
             <AddShoppingCartOutlined
@@ -140,11 +140,11 @@ function ProductCard() {
       </Top>
 
       <Details>
-        <Title>Title</Title>
-        <Des>Description</Des>
+        <Title>{product?.title}</Title>
+        <Des>{product?.name}</Des>
         <Price>
-          1200<Span>1500</Span>
-          <Percent>20% Off</Percent>
+          {product?.price?.org}<Span>{product?.price?.mrp}</Span>
+          <Percent>{product?.price?.off}% Off</Percent>
         </Price>
       </Details>
     </Card>

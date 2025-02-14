@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import homeImg from "../utils/Images/Header.png";
 import { category } from "../utils/data";
 import ProductCategoryCard from "../components/cards/ProductCategoryCard";
 import ProductCard from "../components/cards/ProductCard";
+
+import {getAllProducts} from '../api/index';
 
 // Css
 const Container = styled.div`
@@ -41,6 +43,30 @@ const CardWrapper = styled.div`
 `;
 
 function Home() {
+  const [loading, setLoading] = useState(false);
+  const [products, setProducts] = useState([]);
+
+  const getProducts = async () => {
+    setLoading(true);
+    try {
+      const res = await getAllProducts();
+      console.log("✅ API Response:", res);
+      if (res && Array.isArray(res.data)) {
+        setProducts(res.data);
+      } else {
+        console.error("❌ API did not return an array:", res);
+      }
+    } catch (error) {
+      console.error("❌ Error fetching products:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getProducts();
+  }, []);
+
   return (
     <Container>
       <Section>
@@ -49,7 +75,6 @@ function Home() {
 
       <Section>
         <Title>Shop By Categories</Title>
-
         <CardWrapper>
           {Array.isArray(category) &&
             category.map((item) => (
@@ -60,12 +85,15 @@ function Home() {
 
       <Section>
         <Title>Our BestSeller</Title>
-        <CardWrapper>
-          <ProductCard />
-          <ProductCard />
-          <ProductCard />
-          <ProductCard />
-        </CardWrapper>
+        {loading ? (
+          <p>Loading products...</p>
+        ) : (
+          <CardWrapper>
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </CardWrapper>
+        )}
       </Section>
     </Container>
   );
