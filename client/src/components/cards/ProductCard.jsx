@@ -1,33 +1,40 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { CircularProgress, Rating } from "@mui/material";
 import styled from "styled-components";
-import { Rating } from "@mui/material";
 import {
   AddShoppingCartOutlined,
   FavoriteBorder,
+  FavoriteRounded,
 } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
+import {
+  addToCart,
+  addToFavorite,
+  deleteFromFavorite,
+  getFavorite,
+} from "../../api";
+import { useDispatch } from "react-redux";
+import { openSnackbar } from "../../redux/reducers/snackbarSlice";
 
 const Card = styled.div`
-  width: 280px;
+  width: 250px;
   display: flex;
   flex-direction: column;
+  gap: 16px;
+  transition: all 0.3s ease-out;
   cursor: pointer;
-  margin:30px 0px;
-  @media screen and (max-width: 320px) {
-    width: 250px;
+  @media (max-width: 600px) {
+    width: 170px;
   }
 `;
 const Image = styled.img`
-  height: 320px;
   width: 100%;
+  height: 320px;
   border-radius: 6px;
   object-fit: cover;
   transition: all 0.3s ease-out;
-  &:hover {
-    opacity: 0.8;
-  }
-  @media screen and (max-width: 320px) {
-    height: 250px;
+  @media (max-width: 600px) {
+    height: 240px;
   }
 `;
 const Menu = styled.div`
@@ -40,17 +47,21 @@ const Menu = styled.div`
   flex-direction: column;
   gap: 12px;
 `;
+
 const Top = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   border-radius: 6px;
-
+  transition: all 0.3s ease-out;
   &:hover {
     background-color: ${({ theme }) => theme.primary};
   }
 
+  &:hover ${Image} {
+    opacity: 0.9;
+  }
   &:hover ${Menu} {
     display: flex;
   }
@@ -61,11 +72,12 @@ const MenuItem = styled.div`
   height: 18px;
   background: white;
   padding: 8px;
-  // display: flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   z-index: 200;
 `;
+
 const Rate = styled.div`
   position: absolute;
   z-index: 10;
@@ -81,19 +93,21 @@ const Rate = styled.div`
 `;
 
 const Details = styled.div`
+import { useDispatch } from "react-redux";
+import { openSnackbar } from "../../redux/reducers/snackbarSlice";
   display: flex;
   gap: 6px;
   flex-direction: column;
   padding: 4px 10px;
 `;
-const Title = styled.p`
+const Title = styled.div`
   font-size: 16px;
-  font-weight: 700px;
+  font-weight: 700;
   color: ${({ theme }) => theme.text_primary};
 `;
-const Des = styled.div`
+const Desc = styled.div`
   font-size: 16px;
-  font-weight: 400px;
+  font-weight: 400;
   color: ${({ theme }) => theme.text_primary};
   overflow: hidden;
   text-overflow: ellipsis;
@@ -104,7 +118,8 @@ const Price = styled.div`
   align-items: center;
   gap: 8px;
   font-size: 18px;
-  font-weight: 500px;
+  font-weight: 500;
+  color: ${({ theme }) => theme.text_primary};
 `;
 const Span = styled.div`
   font-size: 14px;
@@ -114,43 +129,133 @@ const Span = styled.div`
   text-decoration-color: ${({ theme }) => theme.text_secondary + 50};
 `;
 const Percent = styled.div`
-  font-size: 14px;
-  font-weight: 500px;
-  color: ${({ theme }) => theme.green};
+  font-size: 12px;
+  font-weight: 500;
+  color: green;
 `;
 
-function ProductCard({product}) {
+const ProductCard = ({ product }) => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [favorite, setFavorite] = useState(false);
+  const [favoriteLoading, setFavoriteLoading] = useState(false);
+
+  const addFavorite = async () => {
+    setFavoriteLoading(true);
+    const token = localStorage.getItem("krist-app-token");
+    await addToFavorite(token, { productID: product?._id })
+      .then((res) => {
+        setFavorite(true);
+        setFavoriteLoading(false);
+      })
+      .catch((err) => {
+        setFavoriteLoading(false);
+        dispatch(
+          openSnackbar({
+            message: err.message,
+            severity: "error",
+          })
+        );
+      });
+  };
+  const removeFavorite = async () => {
+    setFavoriteLoading(true);
+    const token = localStorage.getItem("krist-app-token");
+    await deleteFromFavorite(token, { productID: product?._id })
+      .then((res) => {
+        setFavorite(false);
+        setFavoriteLoading(false);
+      })
+      .catch((err) => {
+        setFavoriteLoading(false);
+        dispatch(
+          openSnackbar({
+            message: err.message,
+            severity: "error",
+          })
+        );
+      });
+  };
+  const addCart = async () => {
+    const token = localStorage.getItem("krist-app-token");
+    await addToCart(token, { productId: product?._id, quantity: 1 })
+      .then((res) => {
+        navigate("/cart");
+      })
+      .catch((err) => {
+        dispatch(
+          openSnackbar({
+            message: err.message,
+            severity: "error",
+          })
+        );
+      });
+  };
+  const checkFavourite = async () => {
+    setFavoriteLoading(true);
+    const token = localStorage.getItem("krist-app-token");
+    await getFavorite(token, { productId: product?._id })
+      .then((res) => {
+        const isFavorite = res.data?.some(
+          (favorite) => favorite._id === product?._id
+        );
+        setFavorite(isFavorite);
+        setFavoriteLoading(false);
+      })
+      .catch((err) => {
+        setFavoriteLoading(false);
+        dispatch(
+          openSnackbar({
+            message: err.message,
+            severity: "error",
+          })
+        );
+      });
+  };
+
+  useEffect(() => {
+    checkFavourite();
+  }, []);
   return (
     <Card>
       <Top>
         <Image src={product?.img} />
         <Menu>
-          <MenuItem>
+          <MenuItem
+            onClick={() => (favorite ? removeFavorite() : addFavorite())}
+          >
+            {favoriteLoading ? (
+              <CircularProgress sx={{ fontSize: "20px" }} />
+            ) : (
+              <>
+                {favorite ? (
+                  <FavoriteRounded sx={{ fontSize: "20px", color: "red" }} />
+                ) : (
+                  <FavoriteBorder sx={{ fontSize: "20px" }} />
+                )}
+              </>
+            )}
+          </MenuItem>{" "}
+          <MenuItem onClick={() => addCart(product?.id)}>
             <AddShoppingCartOutlined
               sx={{ color: "inherit", fontSize: "20px" }}
             />
-          
-          </MenuItem>
-          <MenuItem>
-            <FavoriteBorder sx={{ color: "red", fontSize: "20px" }} />
           </MenuItem>
         </Menu>
         <Rate>
-          <Rating />
+          <Rating value={3.5} sx={{ fontSize: "14px" }} />
         </Rate>
       </Top>
-
-      <Details onClick={()=> navigate(`/shop/${product._id}`)}>
+      <Details onClick={() => navigate(`/shop/${product._id}`)}>
         <Title>{product?.title}</Title>
-        <Des>{product?.name}</Des>
+        <Desc>{product?.name}</Desc>
         <Price>
-          {product?.price?.org}<Span>{product?.price?.mrp}</Span>
-          <Percent>{product?.price?.off}% Off</Percent>
+          ${product?.price?.org} <Span>${product?.price?.mrp}</Span>
+          <Percent>${product?.price?.off}% Off</Percent>
         </Price>
       </Details>
     </Card>
   );
-}
+};
 
 export default ProductCard;
