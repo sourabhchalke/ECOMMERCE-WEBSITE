@@ -5,6 +5,6 @@ import { addProduct, getProduct, getProductById } from '../controllers/Products.
 
 router.post('/addProduct', addProduct);
 router.get('/products', getProduct);
-router.get('/:id', getProductById);
+router.get('/products/:id', getProductById);
 
 export default router;

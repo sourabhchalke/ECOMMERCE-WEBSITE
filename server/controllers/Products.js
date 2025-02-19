@@ -1,3 +1,5 @@
+import mongoose from 'mongoose';
+const { isValidObjectId } = mongoose;
 
 import Product from '../models/Products.js';
 
@@ -84,24 +86,22 @@ export const getProduct = async (req, res) => {
 };
 
 export const getProductById = async (req, res) => {
-    try {
-        const { id } = req.params;
+    const { id } = req.params;
 
-        if (!isValidObjectId(id)) {
-            return res.status(400).send("Invalid product ID");
-        }
-
-        const product = await findById(id);
-
-        if (!product) {
-            return res.status(400).send("Product not found");
-        }
-
-        return res.status(200).json(product);
-
-    } catch (error) {
-        console.log(error);
-        return res.status(400).send("Something went wrong");
+    // Validate MongoDB ObjectId
+    if (!isValidObjectId(id)) {
+        return res.status(400).json({ message: 'Invalid product ID' });
     }
-}
+
+    try {
+        const product = await Product.findById(id);
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+        res.json(product);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
 
