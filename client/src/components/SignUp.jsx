@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import TextInput from "../components/TextInput";
-import Button from "../components/Button";
-import { UserSignUp } from "../api/index.js";
+import TextInput from "./TextInput";
+import Button from "./Button";
+import { UserSignUp } from "../api";
 import { useDispatch } from "react-redux";
+import { loginSuccess } from "../redux/reducers/userSlice";
 import { openSnackbar } from "../redux/reducers/snackbarSlice";
-import { loginSuccess } from "../redux/reducers/userSlice.js";
 
 const Container = styled.div`
   width: 100%;
@@ -14,73 +14,114 @@ const Container = styled.div`
   flex-direction: column;
   gap: 36px;
 `;
-
 const Title = styled.div`
   font-size: 30px;
   font-weight: 800;
   color: ${({ theme }) => theme.primary};
 `;
-
 const Span = styled.div`
   font-size: 16px;
   font-weight: 400;
   color: ${({ theme }) => theme.text_secondary + 90};
 `;
 
-function SignUp() {
+const SignUp = ({ setOpenAuth }) => {
   const dispatch = useDispatch();
-  const [fullname, setFullname] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [buttonDisabled, setButtonDisabled] = useState(false);
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [buttonLoading, setButtonLoading] = useState(false);
 
   const validateInputs = () => {
-    if (!fullname || !email || !password) {
-      dispatch(openSnackbar({ message: "All fields are required!", severity: "error" }));
+    if (!name || !email || !password) {
+      alert("Please fill in all fields");
       return false;
     }
     return true;
   };
 
   const handleSignUp = async () => {
-    try {
-        const userData = {
-            fullname,
-            email,
-            password,
-        };
-
-
-        const response = await UserSignUp(userData);
-        console.log("Signup successful:", response.data);
-
-        // Show success message
-        alert("Signup Successful! Please log in.");
-    } catch (error) {
-        console.error("Signup Error:", error.response?.data || error.message);
-
-        // Show user-friendly error
-        alert(error.response?.data?.message || "Signup failed! Try again.");
+    setLoading(true);
+    setButtonDisabled(true);
+    if (validateInputs()) {
+      await UserSignUp({ name, email, password })
+        .then((res) => {
+          dispatch(loginSuccess(res.data));
+          dispatch(
+            openSnackbar({
+              message: "Sign Up Successful",
+              severity: "success",
+            })
+          );
+          setLoading(false);
+          setButtonDisabled(false);
+          setOpenAuth(false);
+        })
+        .catch((err) => {
+          setButtonDisabled(false);
+          if (err.response) {
+            setLoading(false);
+            setButtonDisabled(false);
+            alert(err.response.data.message);
+            dispatch(
+              openSnackbar({
+                message: err.response.data.message,
+                severity: "error",
+              })
+            );
+          } else {
+            setLoading(false);
+            setButtonDisabled(false);
+            dispatch(
+              openSnackbar({
+                message: err.message,
+                severity: "error",
+              })
+            );
+          }
+        });
     }
-};
+
+    setButtonDisabled(false);
+    setLoading(false);
+  };
 
   return (
     <Container>
       <div>
-        <Title>Create New Account</Title>
-        <Span>Please enter your details to create a new account</Span>
+        <Title>Create New Account 👋</Title>
+        <Span>Please enter details to create a new account</Span>
       </div>
-      <div>
-        <TextInput label="Your Name" placeholder="Enter Your Name" value={fullname}
-          handleChange={(e) => setFullname(e.target.value)} />
-        <TextInput label="Email Address" placeholder="Enter Your Email" value={email}
-          handleChange={(e) => setEmail(e.target.value)}/>
-        <TextInput label="Password" placeholder="Enter Your Password" value={password}
-          handleChange={(e) => setPassword(e.target.value)} password/>
-        <Button text="Sign Up" onClick={handleSignUp} isLoading={buttonLoading} />
+      <div style={{ display: "flex", gap: "20px", flexDirection: "column" }}>
+        <TextInput
+          label="Full Name"
+          placeholder="Enter your full name"
+          value={name}
+          handleChange={(e) => setName(e.target.value)}
+        />
+        <TextInput
+          label="Email Address"
+          placeholder="Enter your email address"
+          value={email}
+          handleChange={(e) => setEmail(e.target.value)}
+        />
+        <TextInput
+          label="Password"
+          placeholder="Enter your password"
+          password
+          value={password}
+          handleChange={(e) => setPassword(e.target.value)}
+        />
+        <Button
+          text="Sign Up"
+          onClick={handleSignUp}
+          isLoading={loading}
+          isDisabled={buttonDisabled}
+        />
       </div>
     </Container>
   );
-}
+};
 
 export default SignUp;
